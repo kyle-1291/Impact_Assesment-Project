@@ -2,10 +2,9 @@
 
 This repository contains projects related to various **impact evaluation methods** such as:
 
-- 📌 Matching
-- 📌 Difference-in-Differences (DiD)
-- 📌 Difference-in-Difference-in-Differences (DDD)
-- 📌 Directed Acyclic Graphs (DAG)  
+- 📌 Matching (exact, approximate, p-score, ipw)
+- 📌 Directed Acyclic Graphs (DAG) 
+- 📌 Difference-in-Differences (DiD)  
 
 All projects are implemented in **R** and **Python**.
 
