@@ -19,11 +19,10 @@ All projects are implemented in **R** and **Python**.
 
 ---
 
-### 📚 Project Contents
-1. **Matching Techniques**
-2. **DiD Analysis**
-3. **DDD Analysis**
-4. **DAG Visualization**
+### 📚 Projects
+1. **Impacts of mosquito net usage on Dengu risk**
+2. **Impact of Workers' Compensation Policy Change on Benefit Duration(DiD)**
+
 
 ---
 
