@@ -12,12 +12,12 @@ A special government program provides free mosquito nets to eligible households 
 ## 📊 **Variable of Interest**
 <div class="variable-list">
   <div class="variable-item">
-    <span class="variable-title">###Dengue Risk### (dengue_risk):</span>  
+    <span class="variable-title">###Dengue Risk (dengue_risk):</span>  
     The likelihood that someone in the household will be infected with dengue. Measured on a scale of 0–100, with higher values indicating higher risk.
   </div>
 
   <div class="variable-item">
-    <span class="variable-title">###Mosquito Net### (net):</span>
+    <span class="variable-title">###Mosquito Net (net):</span>
     A binary variable indicating if the household used mosquito nets.
   </div>
 
