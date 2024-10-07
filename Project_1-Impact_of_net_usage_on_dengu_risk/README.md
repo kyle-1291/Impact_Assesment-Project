@@ -1,24 +1,4 @@
 # 📊 **Impact of net usage on dengue risk**
-
-<style>
-  h1, h2, h3 {
-    color: #2A9D8F; 
-  }
-  .project-section {
-    background-color: #F4F4F9;
-    padding: 15px;
-    border-radius: 5px;
-  }
-  .section-title {
-    color: #264653; 
-    font-size: 1.5em;
-  }
-  .highlight {
-    color: #E76F51;
-    font-weight: bold;
-  }
-</style>
-
 <div class="project-section">
 
 ## 📝 **Project Overview**
@@ -30,28 +10,6 @@ A special government program provides free mosquito nets to eligible households 
 - **Monthly Income:** Less than ₹7,000 per month.
   
 # 📊 **Variable of Interest**
-
-<style>
-  .variable-list {
-    padding: 15px;
-    background-color: #F4F4F9;
-    border-radius: 8px;
-    margin-bottom: 20px;
-  }
-  .variable-item {
-    padding: 10px;
-    border-bottom: 1px solid #E0E0E0;
-  }
-  .variable-title {
-    color: #2A9D8F; 
-    font-weight: bold;
-  }
-  .note {
-    color: #E76F51; 
-    font-style: italic;
-  }
-</style>
-
 <div class="variable-list">
   <div class="variable-item">
     <span class="variable-title">Dengue Risk (dengue_risk):</span>  
