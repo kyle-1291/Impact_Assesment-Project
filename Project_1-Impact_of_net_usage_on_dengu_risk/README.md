@@ -1,10 +1,12 @@
-# 📊 <span style="color:#2A9D8F;">**Impact of net usage on dengue risk** </span>
-<div class="project-section">
+# 📊 **Impact of net usage on dengue risk** 
+<br>
 
 ## 📝 **Project Overview**
 <p style="background-color:Tomato;">This project aims to investigate whether using mosquito nets reduces the risk of contracting dengue among households in a district in India. The analysis is based on a dataset collected from **1,752 households**, containing variables related to environmental factors, individual health, and household characteristics.</p>
 
 ### Data_Set : [mosquito_net.csv](https://github.com/kyle-1291/Impact_Assesment-Project/blob/8d54ade7169eb4f15e0e0b28f88f404edd50421c/Project_1-Impact_of_net_usage_on_dengu_risk/dengue_nets.csv)
+
+---
 
 ## 🌍 **Research Context**
 A special government program provides free mosquito nets to eligible households based on the following criteria:
@@ -13,6 +15,8 @@ A special government program provides free mosquito nets to eligible households 
 - **Monthly Income:** Less than ₹7,000 per month.
 
 However, households are not automatically enrolled in the program, and participation is **voluntary**. As a result, there are discrepancies in net usage among eligible households. This scenario creates a natural observational setting where understanding causal relationships is challenging due to potential **self-selection bias** and **confounding factors**.
+
+---
   
 ## 📊 **Variable of Interest**
 <div class="variable-list">
@@ -66,6 +70,8 @@ However, households are not automatically enrolled in the program, and participa
 </div>
 <br>
 
+---
+
 ## ❓ **Research Question**
 ### **Primary Research Question:**  
 Does using mosquito nets decrease an individual’s risk of contracting dengue?
@@ -102,6 +108,12 @@ The outcome variable is **dengue_risk**, measured on a scale of 0 to 100, with h
 - **Program Eligibility Check:** Adjust the dataset to ensure that the **eligible** variable correctly reflects program criteria after necessary income transformations.
 
 ---
+
+## Software and libraries
+- ![Python](https://img.shields.io/badge/python-3670A0?style=flat&logo=python&logoColor=ffdd54) :
+numpy ;pandas; seaborn; statsmodels; combinations;  matplotlib; sklearn; r2py
+- ![R](https://img.shields.io/badge/r-%23276DC3.svg?style=flat&logo=r&logoColor=white)  :
+utils; ggdag; tidyverse; matchit; jtool; huxtable; daggity
 
 This project is an excellent case study in handling **non-experimental data**, applying causal inference methods, and understanding the limitations of **observational studies**.
 
