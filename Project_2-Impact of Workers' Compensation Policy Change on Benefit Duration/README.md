@@ -4,8 +4,6 @@
 ## 📝 **Project Overview**
 <p>This project aims to evaluate the effect of a policy change on the duration of workers’ compensation benefits in a specific state. In July 1980, the state of Kentucky raised the cap on weekly earnings covered by workers' compensation, impacting high-income workers by increasing their benefits. This study uses a Difference-in-Differences (DiD) approach to compare the duration of benefits for high-income (treatment group) and low-income workers (control group) before and after the policy change.</p>
 
-### Data_Set : [injury.csv]()
-
 ---
 
 ## 🌍 **Research Context**
@@ -21,6 +19,7 @@ Impact on Log Duration: How does the policy affect the log-transformed duration 
 
 ## 💼 **Dataset Information**
 The dataset contains 7,150 observations with 30 variables describing worker characteristics, injury types, and compensation amounts.
+### Data_Set : [`injury.csv`](https://github.com/kyle-1291/Impact_Assesment-Project/blob/866f40c86f503821b25e9866ee6d7973d5e50069/Project_2-Impact%20of%20Workers'%20Compensation%20Policy%20Change%20on%20Benefit%20Duration/INJURY.DTA)
 
 | **Variable**          | **Description** |
 |-----------------------|-----------------|
