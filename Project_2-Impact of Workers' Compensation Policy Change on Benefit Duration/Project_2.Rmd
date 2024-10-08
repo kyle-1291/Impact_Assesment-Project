@@ -1,0 +1,352 @@
+---
+title: "Project2"
+author: "utkrsh"
+date: "2024-05-13"
+output:
+  pdf_document: default
+---
+# Importing required libraries
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)    # ggplot(), %>%, mutate(), and friends
+library(scales)       # Format numbers with functions like comma(), percent(), and dollar()
+library(broom)        # Convert models to data frames
+library(modelsummary) # Side-by-side regression tables
+library(foreign)   # for importing stata data
+library(readr)
+library(haven)
+library(modelsummary)
+library(stargazer)
+library(tidyverse)
+```
+# Importing dataset "INJURY" 
+```{r}
+dataset <- read_dta("C:/Users/utkrsh/Desktop/EC402_Assignment_2_DID/INJURY.DTA")
+```
+# Cleaning the data so that it only includes rows from (ky == 1)
+
+```{r}
+injury <- dataset %>% filter(ky==1)
+
+
+```
+
+# Renaming the columns
+
+```{r}
+injury <- injury %>% rename(duration = durat, log_duration = ldurat,after_1980 = afchnge)
+```
+Viewing the dataset
+```{r}
+injury
+```
+
+# Converting "industry" and "injury type" to categories/factors
+```{r}
+df <- injury %>% mutate(indust = as.factor(indust),injtype = as.factor(injtype))
+
+```
+
+## 1.	Calculating the policy effect on duration, without running any regression, here we see the mean duration of the weeks for both treated and control group before and after 1980 (treatement)
+```{r}
+difr <- df %>% group_by(after_1980,highearn) %>% summarize(mean.duration = mean(duration))
+print(difr)
+```
+### [after_1980(0);highearn(0)]: pre-treatement control group  mean_duration    : 6.47  weeks
+### [after_1980(0);highearn(1)]: pre-treatement treatement group mean_duration  : 11.76 weeks
+### [after_1980(1);highearn(0)]: post-treatement control group mean_duration    : 7.03  weeks
+### [after_1980(1);highearn(1)]: post-treatement treatement group mean_duration : 12.89 weeks
+
+
+### policy_effect =[(avg_duration(post-treatement treated group)-avg_duration(pre-treatement treated group)]-[avg_duration(post-treatement control group)-avg_duration(pre-treatement control group)]
+
+### policy_effect = [avg_duration of treated group (POST-PRE)]-[avg_duration of control group(POST-PRE)]
+```{r}
+pre_treatement_treated_group <- difr %>% 
+  filter(after_1980 == 0, highearn == 1) %>% 
+  pull(mean.duration)
+
+pre_treatement_control_group<- difr %>% 
+  filter(after_1980 == 0, highearn == 0) %>% 
+  pull(mean.duration)
+
+post_treatement_treated_group <- difr %>% 
+  filter(after_1980 == 1, highearn == 1) %>% 
+  pull(mean.duration)
+
+post_treatement_control_group <- difr %>% 
+  filter(after_1980 == 1, highearn == 0) %>% 
+  pull(mean.duration)
+```
+
+```{r}
+treatement_group_before_after <- post_treatement_treated_group - pre_treatement_treated_group
+control_group_before_after    <-post_treatement_control_group- pre_treatement_control_group
+```
+
+
+
+
+## Policy Effect(DiD Estimate:)
+```{r}
+policy_effect_nive <- treatement_group_before_after - control_group_before_after
+print(policy_effect_nive)
+```
+
+
+## 2.	Calculating the policy effect on duration, without running any regression, here we see the mean log_duration in  weeks for both treated and control group before and after 1980(treatemnt)
+
+```{r}
+difr_log <- df %>% group_by(after_1980,highearn) %>% summarize(mean.log_duration = mean(log_duration))
+head(difr_log)
+```
+
+### [after_1980(0);highearn(0)]: pre-treatement control group  mean_log_duration    : 1.12 weeks
+### [after_1980(0);highearn(1)]: pre-treatement treated group mean_log_duration     : 1.38 weeks
+### [after_1980(1);highearn(0)]: post-treatement control group mean_log_duration    : 1.13 weeks
+### [after_1980(1);highearn(1)]: post-treatement treated group mean_log_duration    : 1.58 weeks
+
+### policy_effect =[(log_avg_duration(post-treatement treated group)-log_avg_duration(pre-treatement treated group)]-[log_avg_duration(post-treatement control group)-log_avg_duration(pre-treatement control group)] ###
+
+### policy_effect = [log_avg_duration of treated group (POST-PRE)]-[log_avg_duration of control group(POST-PRE)]
+
+```{r}
+pre_treatement_treated_group_log <- difr_log %>% 
+  filter(after_1980 == 0, highearn == 1) %>% 
+  pull(mean.log_duration)
+
+pre_treatement_control_group_log<- difr_log %>% 
+  filter(after_1980 == 0, highearn == 0) %>% 
+  pull(mean.log_duration)
+
+post_treatement_treated_group_log <- difr_log %>% 
+  filter(after_1980 == 1, highearn == 1) %>% 
+  pull(mean.log_duration)
+
+post_treatement_control_group_log <- difr_log %>% 
+  filter(after_1980 == 1, highearn == 0) %>% 
+  pull(mean.log_duration)
+```
+
+```{r}
+log_treatement_group_before_after <- post_treatement_treated_group_log - 
+  pre_treatement_treated_group_log
+log_control_group_before_after    <-post_treatement_control_group_log- 
+  pre_treatement_control_group_log
+```
+
+
+
+
+## Policy Effect log(DiD log Estimate:)
+```{r}
+policy_effect_log <- log_treatement_group_before_after - log_control_group_before_after
+print(policy_effect_log)
+```
+
+
+# Plotting 
+### Distribution of Duration by Category
+```{r}
+ggplot(data = df, aes(x = duration)) +
+  geom_histogram(binwidth = 10, color = "white", boundary = 0) +
+  facet_wrap(~ highearn)
+```
+
+### Ploting log duration based on category
+```{r}
+ggplot(data = df, mapping = aes(x = log_duration)) +
+  geom_histogram(binwidth = 0.5, color = "white", boundary = 0) + 
+   scale_x_continuous(labels = trans_format("exp", format = round)) +
+  facet_wrap(~ highearn)
+```
+
+### Here we just calculate Mean
+```{r}
+ggplot(df, aes(x = factor(highearn), y = log_duration)) +
+  geom_point(size = 0.5, alpha = 0.2) +
+  stat_summary(geom = "point", fun = "mean", size = 5, color = "blue") +
+  facet_wrap(vars(after_1980))
+```
+
+
+
+
+
+
+
+
+
+## 3.Basic Regression analysis to calculate the estimates without any control 
+### Basic Regression model
+$$
+duration = \beta_0 + \beta_1 after1980 + \beta_2 highearn + \delta afterchange \cdot highearn + u
+$$
+
+
+```{r}
+basic_model_1 <- lm(duration ~ after_1980 + highearn + after_1980*highearn, data = df)
+tidy(basic_model_1)
+```
+The notation $\delta$$1$ = 0.9513, indicates that the policy change might have increased the duration of benefits for
+high-income workers by about 0.9513 weeks more than for low-income workers. However, this effect is not
+statistically significant (p=0.414). The coefficient on after_1980 is small 0.7658 and statistically insignificant
+which means the increase in the earnings cap has no effect on duration for low-income workers.
+
+
+$$
+\log(duration) = \beta_0 + \beta_1 after1980 + \beta_2 highearn + \delta_1 afterchange \cdot highearn + u
+$$
+
+```{r}
+basic_model_2 <- lm(log(duration) ~ after_1980 + highearn + after_1980*highearn, data = df)
+tidy(basic_model_2)
+```
+
+The notation $\delta$ signifies that the average duration of workers' compensation among high earners rose approximately by 19.06% due to the increased earnings cap. The coefficient on after_1980 is small 0.007 and statistically insignificant which means the increase in the earnings cap has no effect on duration for low-income workers.
+
+## 4.regression adujstment procedure to evaluate the impact of policy change on the duration, and log_duration.
+
+### Regression Adjustment Model 1
+$$
+\text{duration} = \beta_0 + \beta_1 \text{after1980} + \beta_2 \text{highearn} + \delta_1 \text{afterchange} \cdot \text{highearn} \\$$
+$$+ \gamma_1\text{male} + \gamma_2\text{married} + \gamma_3\text{age}^2 + \gamma_4\text{hosp} + \gamma_5\text{indust} \\$$
+$$+ \gamma_6\text{injtype} + \gamma_7\text{lprewage}+ u$$
+### Creating a new column age squared
+```{r}
+df <- df %>% mutate(age_squared = age^2)
+
+```
+
+```{r}
+adv_model_1 <- lm(duration ~ after_1980 + highearn + 
+after_1980*highearn + male + married + age_squared + 
+hosp + indust + injtype + lprewage, data =df)
+print(summary(adv_model_1))
+```
+After controlling for all the X's (male ,married , age_squared ,hosp,indust,injtype,lprewage), the coeffcicent of interation term comes out to be 1.79 whic is insignificant. 
+
+### Regression Adjustment Model 2
+
+$$
+\log(\text{duration}) = \beta_0 + \beta_1 \text{after1980} + \beta_2 \text{highearn} + \delta_1 \text{afterchange} \cdot \text{highearn} \\$$
+$$
++ \gamma_1\text{male} + \gamma_2\text{married} + \gamma_3\text{age}^2 + \gamma_4\text{hosp} + \gamma_5\text{indust} \\$$
+$$+ \gamma_6\text{injtype} + \gamma_7\text{lprewage}+ u$$
+
+After controlling for all the X's (male ,married , age_squared ,hosp,indust,
+injtype,lprewage), the coeffcicent of interation term comes out to be 1.69 whic 
+is significant , which means that the he average duration of workers' 
+compensation among high earners rose approximately by 16.07% due to the 
+increased earnings cap. 
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+adv_model_2 <- lm(log_duration ~ after_1980 + highearn + 
+after_1980*highearn + male + married + age_squared + hosp 
++ indust + injtype + lprewage, data =df)
+print(summary(adv_model_2))
+```
+
+
+
+
+Combining the data set to contain (ky==0)
+We here combine the data set including the state of michigan state sample . 
+```{r}
+dataset_combined <- dataset %>% rename(duration = durat, 
+log_duration = ldurat,after_1980 = afchnge)%>% 
+mutate(indust = as.factor(indust),injtype = as.factor(injtype))%>% 
+mutate(age_squared = age^2)
+```
+
+# 5.  Robustness check
+$$\log(\text{duration}) = \beta_0 + \beta_1 \text{after1980} + \beta_2 \text{highearn}
++ \delta_1 \text{afterchange} \cdot \text{highearn} \\$$
+$$+ \gamma_1\text{male} + \gamma_2\text{married} + \gamma_3\text{age}^2 \\
++ \gamma_4\text{hosp} + \gamma_5\text{indust} \\$$
+$$+ \gamma_6\text{injtype} + \gamma_7\text{lprewage} \\
++ \delta_2 \text{after1980} \cdot \text{ky} + \delta_3 \text{ky} + u
+$$
+```{r}
+robust_model1 <- lm(log_duration ~ after_1980 + highearn +
+after_1980*highearn + male + married + age_squared + hosp 
++ indust + injtype + lprewage + ky +ky:after_1980, data =dataset_combined)
+print(summary(robust_model1))
+```
+## DDD
+
+$$
+\text{log(duration)}= \beta_0+ \beta_1*ky+ \beta_2*after1980_t+ \beta_3*highEarn_i+\\
+$$
+$$\gamma_1(ky_s*after1980_t)+\gamma_2(ky*highearn)+ \gamma_2(after1980*highearn)+\\
+\delta_1(ky*after1980*highearn)+ \psi*{X}+ u$$
+
+
+Considering the entire dataset including Michigan, we need to account for 
+state-specific and income-specific time trends that might influence compensation
+benefits. To do this, we use Triple Differences, which involves comparing the 
+differences between Kentucky and Michigan data to eliminate these confounding 
+factors.
+```{r}
+DDD= lm( duration ~ ky + after_1980 + highearn + ky*after_1980 + ky*highearn 
+         + after_1980*highearn + ky*after_1980*highearn + male + married 
+         + age_squared + hosp 
++ indust + injtype + lprewage, data=dataset_combined)
+summary(DDD)
+
+```
+here we see that the triple interaction term comes out to be 1.36 positive but 
+insignificant, when controlling for all the other possible X's.
+
+
+
+# 6. Generating Graph
+```{r}
+graph_data <- dataset_combined %>% 
+   mutate(highearn = factor(highearn, labels = c("Low earner", "High earner")),
+         after_1980 = factor(after_1980, labels = c("Before 1980", "After 1980"))) %>% 
+  group_by(highearn, after_1980) %>% 
+  summarize(mean_duration = mean(log_duration),
+            se_duration = sd(log_duration) / sqrt(n()),
+            upper = mean_duration + (1.96 * se_duration),
+            lower = mean_duration + (-1.96 * se_duration)) 
+```
+```{r}
+ggplot(graph_data, aes(x = highearn, y = mean_duration)) +
+  geom_pointrange(aes(ymin = lower, ymax = upper), 
+                  color = "darkorange", size = 1) +
+  facet_wrap(vars(after_1980))
+```
+
+```{r}
+ggplot(graph_data, aes(x = after_1980, y = mean_duration, color = highearn)) +
+  geom_pointrange(aes(ymin = lower, ymax = upper), size = 1) + 
+  # The group = highearn here makes it so the lines go across categories
+  geom_line(aes(group = highearn))
+```
+
+```{r}
+ggplot(difr_log, aes(x = as.factor(after_1980), 
+                  y = mean.log_duration, 
+                  color = as.factor(highearn)))+
+  geom_point() +
+  geom_line(aes(group = as.factor(highearn))) +
+  annotate(geom = "segment", x = "0", xend = "1",
+           y = pre_treatement_treated_group_log, yend = 
+             post_treatement_treated_group_log - policy_effect_log,
+           linetype = "dashed", color = "black") +
+  annotate(geom = "segment", x = "1", xend = "1",
+           y = post_treatement_treated_group_log, yend =
+             post_treatement_treated_group_log - policy_effect_log,
+           linetype = "dotted", color = "red") +
+  annotate(geom = "label", x = "1", y = post_treatement_treated_group_log
+           - (policy_effect_log / 2), 
+           label = "Program effect", size = 5)
+```
+
+```{r message=FALSE, warning=FALSE}
+modelsummary(list(basic_model_2,adv_model_2,DDD,robust_model1),output='latex')
+
+```
